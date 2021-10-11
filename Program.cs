@@ -7,8 +7,12 @@ namespace LogicTest
 {
     public abstract class LogicTestBase
     {
-        public virtual bool IsRun { get; } = true;
-        public abstract void Run();
+        public virtual bool doLog { get; } = true;
+        /// <summary>
+        /// LogicTestBaseを継承したクラスの実行を決めます。
+        /// </summary>
+        public virtual bool doInvoke { get; } = true;
+        public abstract void Start();
     }
 
     class Program
@@ -22,16 +26,30 @@ namespace LogicTest
                 {
                     if (Activator.CreateInstance(type) is LogicTestBase instance)
                     {
-                        if (instance.IsRun)
+                        if (instance.doInvoke)
                         {
-                            Console.WriteLine($"Running {type}");
-                            instance.Run();
+                            if(instance.doLog) Debug.Log($"{type.Name} -> Running....");
+                            instance.Start();
+                            if(instance.doLog) Debug.Log($"{type.Name} -> Executed");
                         }
                     }
                 }
             }
 
             Console.ReadLine();
+        }
+    }
+
+    class TimePrint
+    {
+        public static string Current => DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+    }
+
+    public class Debug
+    {
+        public static void Log(string value)
+        {
+            Console.WriteLine($"[{TimePrint.Current}] {value}");
         }
     }
 }

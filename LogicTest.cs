@@ -1,20 +1,13 @@
 using C = LogicTest;
+using System;
+
 namespace LogicTest
 {
     public class LogicA : LogicTestBase
     {
-        public override void Run()
+        public override void Start()
         {
-
-        }
-    }
-
-    public class LogicB : LogicTestBase
-    {
-        public override bool IsRun => false;
-        public override void Run()
-        {
-
+            Debug.Log("‚ ‚¢‚¤‚¦‚¨");
         }
     }
 }
