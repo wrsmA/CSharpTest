@@ -42,7 +42,7 @@ namespace LogicTest
 
     class TimePrint
     {
-        public static string Current => DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+        public static string Current => DateTime.Now.ToString("HH:mm:ss");
     }
 
     public class Debug

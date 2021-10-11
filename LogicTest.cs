@@ -7,7 +7,7 @@ namespace LogicTest
     {
         public override void Start()
         {
-            Debug.Log("‚ ‚¢‚¤‚¦‚¨");
+            Debug.Log(Console.ReadLine());
         }
     }
 }
