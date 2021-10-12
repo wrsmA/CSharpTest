@@ -8,7 +8,12 @@ namespace LogicTest
     public class LogicA : UniCycle
     {
         int count = 0;
-        public override void Update()
+        public override void Awake()
+        {
+            Debug.Log(count.ToString());
+            count++;
+        }
+        public override void Start()
         {
             Debug.Log(count.ToString());
             count++;

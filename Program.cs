@@ -8,7 +8,11 @@ using Timer = System.Timers.Timer;
 
 namespace UnityCycle
 {
-    public abstract class UniCycle
+    /// <summary>
+    /// Esc = プログラム　一時停止 / 再開
+    /// Tab = プログラム　正常終了
+    /// </summary>
+    public class UniCycle
     {
         /// <summary>
         /// クラス作成時にログを表示します。
@@ -41,10 +45,6 @@ namespace UnityCycle
         void noneExecutable() { }
     }
 
-    /// <summary>
-    /// Esc = プログラム　一時停止 / 再開
-    /// Tab = プログラム　正常終了
-    /// </summary>
     class Program
     {
         static void Main(string[] args)
@@ -87,8 +87,11 @@ namespace UnityCycle
                 var tasks = new List<Task>();
                 foreach(var _uInstance in UniInstance)
                 {
-                    if(_uInstance.Value.doLog) Debug.Log($"{_uInstance.Key.Name} -> Awake Executed...");
-                    tasks.Add(Task.Run(() => _uInstance.Value.Awake()));
+                    if (IsOverrideMethod(_uInstance.Key, "Awake"))
+                    {
+                        if (_uInstance.Value.doLog) Debug.Log($"{_uInstance.Key.Name} -> Awake Executed...");
+                        tasks.Add(Task.Run(() => _uInstance.Value.Awake()));
+                    }
                 }
                 Task.WhenAll(tasks);
             }
@@ -107,8 +110,11 @@ namespace UnityCycle
                 await Task.Delay(timeLag);
                 foreach(var _uInstance in UniInstance)
                 {
-                    if (_uInstance.Value.doLog) Debug.Log($"{_uInstance.Key.Name} -> Start Executed...");
-                    _ = Task.Run(() => _uInstance.Value.Start());
+                    if(IsOverrideMethod(_uInstance.Key, "Start"))
+                    {
+                        if (_uInstance.Value.doLog) Debug.Log($"{_uInstance.Key.Name} -> Start Executed...");
+                        _ = Task.Run(() => _uInstance.Value.Start());
+                    }
                 }
             }
 
@@ -121,14 +127,18 @@ namespace UnityCycle
             {
                 foreach (var _uInstance in UniInstance)
                 {
-                    var timer = new Timer()
+                    if (IsOverrideMethod(_uInstance.Key, "Update"))
                     {
-                        Interval = 1000/60, // Unityに合わせて60fpsにしてます。
-                        AutoReset = true,
-                        Enabled = true
-                    };
-                    timer.Elapsed += new ElapsedEventHandler((sender, e) => _uInstance.Value.Update());
-                    updateTimers.Add(timer);
+                        var timer = new Timer()
+                        {
+                            Interval = 1000/60, // Unityに合わせて60fpsにしてます。
+                            AutoReset = true,
+                            Enabled = true
+                        };
+                        timer.Elapsed += new ElapsedEventHandler((sender, e) => _uInstance.Value.Update());
+                        updateTimers.Add(timer);
+                    }
+
                 }
             }
 
@@ -140,17 +150,23 @@ namespace UnityCycle
             void FixedUpdateOrder(){
                 foreach (var _uInstance in UniInstance)
                 {
-                    var timer = new Timer() {
-                        Interval = 1000,
-                        AutoReset = true,
-                        Enabled = true
-                    };
-                    timer.Elapsed += new ElapsedEventHandler((sender, e) => _uInstance.Value.FixedUpdate());
-                    fixedUpdateTimers.Add(timer);
+                    if (IsOverrideMethod(_uInstance.Key, "FixedUpdate"))
+                    {
+                        var timer = new Timer() {
+                            Interval = 1000,
+                            AutoReset = true,
+                            Enabled = true
+                        };
+                        timer.Elapsed += new ElapsedEventHandler((sender, e) => _uInstance.Value.FixedUpdate());
+                        fixedUpdateTimers.Add(timer);
+                    }
                 }
             }
 
             #endregion
+
+
+            #region Commands
 
             while (true)
             {
@@ -173,6 +189,8 @@ namespace UnityCycle
                 }
             }
 
+            #endregion
+
             #region Time Dispose
             void BeforeTermination()
             {
@@ -189,6 +207,13 @@ namespace UnityCycle
             }
 
             #endregion
+
+            bool IsOverrideMethod(Type type, string methodName)
+            {
+                var method = type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
+                if (method == null) return false;
+                return method.DeclaringType != method.GetBaseDefinition().DeclaringType;
+            }
         }
     }
 
