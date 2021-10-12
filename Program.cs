@@ -98,16 +98,15 @@ namespace UnityCycle
 
             #endregion
             
+            // Awake終了後とStart開始時までのタイムラグ
+            // Awake内に初期化処理が行われた時の為の措置
+            Task.Delay(1000).Wait();
+
             StartOrder();
             #region Start
 
-            /// <summary>
-            /// timeLag = Awake終了後とStart開始時までのタイムラグ
-            /// 1 timelag == 1 ミリ秒
-            /// </summary>
-            async void StartOrder(int timeLag = 1000)
+            void StartOrder()
             {
-                await Task.Delay(timeLag);
                 foreach(var _uInstance in UniInstance)
                 {
                     if(IsOverrideMethod(_uInstance.Key, "Start"))
@@ -129,6 +128,7 @@ namespace UnityCycle
                 {
                     if (IsOverrideMethod(_uInstance.Key, "Update"))
                     {
+                        if (_uInstance.Value.doLog) Debug.Log($"{_uInstance.Key.Name} -> Update Execute Started...");
                         var timer = new Timer()
                         {
                             Interval = 1000/60, // Unityに合わせて60fpsにしてます。
@@ -152,6 +152,7 @@ namespace UnityCycle
                 {
                     if (IsOverrideMethod(_uInstance.Key, "FixedUpdate"))
                     {
+                        if (_uInstance.Value.doLog) Debug.Log($"{_uInstance.Key.Name} -> FixedUpdate Execute Started...");
                         var timer = new Timer() {
                             Interval = 1000,
                             AutoReset = true,
