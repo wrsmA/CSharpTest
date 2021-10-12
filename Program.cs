@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -40,6 +41,10 @@ namespace UnityCycle
         void noneExecutable() { }
     }
 
+    /// <summary>
+    /// Esc = プログラム　一時停止 / 再開
+    /// Tab = プログラム　正常終了
+    /// </summary>
     class Program
     {
         static void Main(string[] args)
@@ -118,7 +123,7 @@ namespace UnityCycle
                 {
                     var timer = new Timer()
                     {
-                        Interval = 1,
+                        Interval = 1000/60, // Unityに合わせて60fpsにしてます。
                         AutoReset = true,
                         Enabled = true
                     };
@@ -147,18 +152,39 @@ namespace UnityCycle
 
             #endregion
 
-            Console.ReadLine();
+            while (true)
+            {
+                switch (Console.ReadKey().Key)
+                {
+                    // 一時停止
+                    case ConsoleKey.Escape:
+                        foreach (var tt in updateTimers)
+                        {
+                            if (tt.Enabled)
+                                tt.Stop();
+                            else
+                                tt.Start();
+                        }
+                        break;
+                    // 正常終了
+                    case ConsoleKey.Tab:
+                        BeforeTermination();
+                        return;
+                }
+            }
 
             #region Time Dispose
-
-            timeDisposer(updateTimers.ToArray());
-            timeDisposer(fixedUpdateTimers.ToArray());
-            void timeDisposer(Timer[] timers)
+            void BeforeTermination()
             {
-                foreach (var tt in timers)
+                timeDisposer(updateTimers.ToArray());
+                timeDisposer(fixedUpdateTimers.ToArray());
+                void timeDisposer(Timer[] timers)
                 {
-                    tt.Enabled = false;
-                    tt.Dispose();
+                    foreach (var tt in timers)
+                    {
+                        tt.Enabled = false;
+                        tt.Dispose();
+                    }
                 }
             }
 
