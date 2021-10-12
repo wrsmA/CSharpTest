@@ -1,13 +1,17 @@
-using C = LogicTest;
 using System;
+using System.Threading.Tasks;
+using System.Threading;
+using UnityCycle;
 
 namespace LogicTest
 {
-    public class LogicA : LogicTestBase
+    public class LogicA : UniCycle
     {
-        public override void Start()
+        int count = 0;
+        public override void FixedUpdate()
         {
-            Debug.Log(Console.ReadLine());
+            Debug.Log(count.ToString());
+            count++;
         }
     }
 }
