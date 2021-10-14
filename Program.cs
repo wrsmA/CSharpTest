@@ -122,6 +122,28 @@ namespace UnityCycle
 
             #endregion
 
+            FixedUpdateOrder();
+            #region FixedUpdate
+
+            void FixedUpdateOrder(){
+                foreach (var _uInstance in UniInstance)
+                {
+                    if (IsOverrideMethod(_uInstance.Key, "FixedUpdate"))
+                    {
+                        if (_uInstance.Value.doLog) Debug.Log($"{_uInstance.Key.Name} -> FixedUpdate Execute Started...");
+                        var timer = new Timer() {
+                            Interval = 1000 * 0.02,
+                            AutoReset = true,
+                            Enabled = true
+                        };
+                        timer.Elapsed += new ElapsedEventHandler((sender, e) => _uInstance.Value.FixedUpdate());
+                        fixedUpdateTimers.Add(timer);
+                    }
+                }
+            }
+
+            #endregion
+
             UpdatesOrder();
             #region Updates
 
@@ -156,28 +178,6 @@ namespace UnityCycle
                     (sender, e) => { combined(); });
                 updateTimers.Add(timer);
 
-            }
-
-            #endregion
-
-            FixedUpdateOrder();
-            #region FixedUpdate
-
-            void FixedUpdateOrder(){
-                foreach (var _uInstance in UniInstance)
-                {
-                    if (IsOverrideMethod(_uInstance.Key, "FixedUpdate"))
-                    {
-                        if (_uInstance.Value.doLog) Debug.Log($"{_uInstance.Key.Name} -> FixedUpdate Execute Started...");
-                        var timer = new Timer() {
-                            Interval = 1000,
-                            AutoReset = true,
-                            Enabled = true
-                        };
-                        timer.Elapsed += new ElapsedEventHandler((sender, e) => _uInstance.Value.FixedUpdate());
-                        fixedUpdateTimers.Add(timer);
-                    }
-                }
             }
 
             #endregion
