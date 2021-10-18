@@ -10,40 +10,42 @@ using Timer = System.Timers.Timer;
 namespace UnityCycle
 {
     /// <summary>
-    /// Esc = ƒvƒƒOƒ‰ƒ€@ˆê’â~ / ÄŠJ
-    /// Tab = ƒvƒƒOƒ‰ƒ€@³íI—¹
+    /// Esc = ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã€€ä¸€æ™‚åœæ­¢ / å†é–‹
+    /// Tab = ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã€€æ­£å¸¸çµ‚äº†
     /// </summary>
     public class UniCycle
     {
         /// <summary>
-        /// ƒNƒ‰ƒXì¬‚ÉƒƒO‚ğ•\¦‚µ‚Ü‚·B
+        /// ã‚¯ãƒ©ã‚¹ä½œæˆæ™‚ã«ãƒ­ã‚°ã‚’è¡¨ç¤ºã—ã¾ã™ã€‚
         /// </summary>
         public virtual bool doLog { get; } = true;
         /// <summary>
-        /// LogicTestBase‚ğŒp³‚µ‚½ƒNƒ‰ƒX‚ÌÀs‚ğŒˆ‚ß‚Ü‚·B
+        /// LogicTestBaseã‚’ç¶™æ‰¿ã—ãŸã‚¯ãƒ©ã‚¹ã®å®Ÿè¡Œã‚’æ±ºã‚ã¾ã™ã€‚
         /// </summary>
         public virtual bool doInvoke { get; } = true;
         /// <summary>
-        /// ƒfƒoƒbƒOŠJn‚Éˆê“x‚¾‚¯Às‚³‚ê‚Ü‚·B
+        /// ãƒ‡ãƒãƒƒã‚°é–‹å§‹æ™‚ã«ä¸€åº¦ã ã‘å®Ÿè¡Œã•ã‚Œã¾ã™ã€‚
         /// </summary>
         public virtual void Awake() => noneExecutable();
         /// <summary>
-        /// Update‚ªÀs‚³‚ê‚éÅ‰‚Ìˆê“x‚¾‚¯Às‚³‚ê‚Ü‚·B
+        /// UpdateãŒå®Ÿè¡Œã•ã‚Œã‚‹æœ€åˆã®ä¸€åº¦ã ã‘å®Ÿè¡Œã•ã‚Œã¾ã™ã€‚
         /// </summary>
         public virtual void Start() => noneExecutable();
         /// <summary>
-        /// –ˆƒtƒŒ[ƒ€Às‚³‚ê‚Ü‚·B
+        /// æ¯ãƒ•ãƒ¬ãƒ¼ãƒ å®Ÿè¡Œã•ã‚Œã¾ã™ã€‚
         /// </summary>
         public virtual void Update() => noneExecutable();
         /// <summary>
-        /// –ˆ•bÀs‚³‚ê‚Ü‚·B
+        /// æ¯ç§’å®Ÿè¡Œã•ã‚Œã¾ã™ã€‚
         /// </summary>
-        /// 
-        public virtual void LateUpdate() => noneExecutable();
         public virtual void FixedUpdate() => noneExecutable();
+        /// <summary>
+        /// æ¯ãƒ•ãƒ¬ãƒ¼ãƒ å®Ÿè¡Œã•ã‚Œã¾ã™ã€‚(Updateã‚ˆã‚Šé…ã„)
+        /// </summary>
+        public virtual void LateUpdate() => noneExecutable();
 
         /// <summary>
-        /// ‰½‚àÀs‚µ‚È‚¢ŠÖ”‚Å‚·B
+        /// ä½•ã‚‚å®Ÿè¡Œã—ãªã„é–¢æ•°ã§ã™ã€‚
         /// </summary>
         void noneExecutable() { }
     }
@@ -100,9 +102,9 @@ namespace UnityCycle
             }
 
             #endregion
-            
-            // AwakeI—¹Œã‚ÆStartŠJn‚Ü‚Å‚Ìƒ^ƒCƒ€ƒ‰ƒO
-            // Awake“à‚É‰Šú‰»ˆ—‚ªs‚í‚ê‚½‚Ìˆ×‚Ì‘[’u
+
+            // Awakeçµ‚äº†å¾Œã¨Starté–‹å§‹æ™‚ã¾ã§ã®ã‚¿ã‚¤ãƒ ãƒ©ã‚°
+            // Awakeå†…ã«åˆæœŸåŒ–å‡¦ç†ãŒè¡Œã‚ã‚ŒãŸæ™‚ã®ç‚ºã®æªç½®
             Task.Delay(1000).Wait();
 
             StartOrder();
@@ -148,10 +150,9 @@ namespace UnityCycle
             #region Updates
 
 
-            // Update ‚ÆLateUpdate‚ÌƒCƒxƒ“ƒg“o˜^
+            // Update ã¨LateUpdateã®ã‚¤ãƒ™ãƒ³ãƒˆç™»éŒ²
             void UpdatesOrder()
             {
-                //
                 List<Action> UpdateDelegates = new List<Action>();
                 List<Action> LateUpdateDelegates = new List<Action>();
                 foreach(var _uInstance in UniInstance)
@@ -167,7 +168,7 @@ namespace UnityCycle
                 }
                 var timer = new Timer()
                 {
-                    Interval = 1000/60, // Unity‚É‡‚í‚¹‚Ä60fps‚É‚µ‚Ä‚Ü‚·B
+                    Interval = 1000/60, // Unityã«åˆã‚ã›ã¦60fpsã«ã—ã¦ã¾ã™ã€‚
                     AutoReset = true,
                     Enabled = true
                 };
@@ -189,7 +190,7 @@ namespace UnityCycle
             {
                 switch (Console.ReadKey().Key)
                 {
-                    // ˆê’â~
+                    // ä¸€æ™‚åœæ­¢
                     case ConsoleKey.Escape:
                         foreach (var tt in updateTimers)
                         {
@@ -199,7 +200,7 @@ namespace UnityCycle
                                 tt.Start();
                         }
                         break;
-                    // ³íI—¹
+                    // æ­£å¸¸çµ‚äº†
                     case ConsoleKey.Tab:
                         BeforeTermination();
                         return;

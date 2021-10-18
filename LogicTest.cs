@@ -5,30 +5,15 @@ using UnityCycle;
 
 namespace LogicTest
 {
-    public class LogicA : UniCycle
+    public class Sample : UniCycle
     {
+        public override void Start()
+        {
+            // 蛻晏屓繝輔Ξ繝ｼ繝縺ｫ1蠎ｦ縺縺大ｮ溯｡後＆繧後∪縺吶�
+        }
         public override void Update()
         {
-            // 毎フレーム実行されます。
-            Debug.Log("Update");
-        }
-
-        public override void LateUpdate()
-        {
-            Debug.Log("LateUpdate");
-        }
-    }
-    public class LogicB : UniCycle
-    {
-        public override void Update()
-        {
-            // 毎フレーム実行されます。
-            Debug.Log("Update");
-        }
-
-        public override void LateUpdate()
-        {
-            Debug.Log("LateUpdate");
+            // 豈弱ヵ繝ｬ繝ｼ繝螳溯｡後＆繧後∪縺吶�
         }
     }
 }
