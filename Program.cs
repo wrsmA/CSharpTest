@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -37,6 +38,8 @@ namespace UnityCycle
         /// <summary>
         /// 毎秒実行されます。
         /// </summary>
+        /// 
+        public virtual void LateUpdate() => noneExecutable();
         public virtual void FixedUpdate() => noneExecutable();
 
         /// <summary>
@@ -119,31 +122,6 @@ namespace UnityCycle
 
             #endregion
 
-            UpdateOrder();
-            #region Update
-
-            void UpdateOrder()
-            {
-                foreach (var _uInstance in UniInstance)
-                {
-                    if (IsOverrideMethod(_uInstance.Key, "Update"))
-                    {
-                        if (_uInstance.Value.doLog) Debug.Log($"{_uInstance.Key.Name} -> Update Execute Started...");
-                        var timer = new Timer()
-                        {
-                            Interval = 1000/60, // Unityに合わせて60fpsにしてます。
-                            AutoReset = true,
-                            Enabled = true
-                        };
-                        timer.Elapsed += new ElapsedEventHandler((sender, e) => _uInstance.Value.Update());
-                        updateTimers.Add(timer);
-                    }
-
-                }
-            }
-
-            #endregion
-
             FixedUpdateOrder();
             #region FixedUpdate
 
@@ -154,7 +132,7 @@ namespace UnityCycle
                     {
                         if (_uInstance.Value.doLog) Debug.Log($"{_uInstance.Key.Name} -> FixedUpdate Execute Started...");
                         var timer = new Timer() {
-                            Interval = 1000,
+                            Interval = 1000 * 0.02,
                             AutoReset = true,
                             Enabled = true
                         };
@@ -162,6 +140,44 @@ namespace UnityCycle
                         fixedUpdateTimers.Add(timer);
                     }
                 }
+            }
+
+            #endregion
+
+            UpdatesOrder();
+            #region Updates
+
+
+            // Update とLateUpdateのイベント登録
+            void UpdatesOrder()
+            {
+                //
+                List<Action> UpdateDelegates = new List<Action>();
+                List<Action> LateUpdateDelegates = new List<Action>();
+                foreach(var _uInstance in UniInstance)
+                {
+                    if (IsOverrideMethod(_uInstance.Key, "Update"))
+                        UpdateDelegates.Add(
+                        () => _uInstance.Value.Update()
+                       );
+                    if (IsOverrideMethod(_uInstance.Key, "LateUpdate"))
+                        LateUpdateDelegates.Add(
+                        () => _uInstance.Value.LateUpdate()
+                       );
+                }
+                var timer = new Timer()
+                {
+                    Interval = 1000/60, // Unityに合わせて60fpsにしてます。
+                    AutoReset = true,
+                    Enabled = true
+                };
+
+                //if (_uInstance.Value.doLog) Debug.Log($"{_uInstance.Key.Name} -> Update Execute Started...");
+                var combined = (Action)Delegate.Combine((UpdateDelegates.Concat(LateUpdateDelegates)).ToArray());
+                timer.Elapsed += new ElapsedEventHandler(
+                    (sender, e) => { combined(); });
+                updateTimers.Add(timer);
+
             }
 
             #endregion
